@@ -306,6 +306,29 @@
           <div class="chat-header-sub" id="headerStatus">Your Haitian AI Assistant</div>
         </div>
       </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.07);border-radius:10px">
+          <span style="font-size:14px">🕐</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#fff;line-height:1.2" id="liveClockDisplay">--:-- --</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);line-height:1.2" id="liveTimezone">Local</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.07);border-radius:10px">
+          <span style="font-size:14px">📅</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#fff;line-height:1.2" id="liveDateDisplay">-- ---</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);line-height:1.2" id="liveYearDisplay">----</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(255,255,255,0.04);border:0.5px solid rgba(255,255,255,0.07);border-radius:10px" id="weatherBlock">
+          <span style="font-size:14px" id="weatherIcon">⛅</span>
+          <div>
+            <div style="font-size:13px;font-weight:600;color:#fff;line-height:1.2" id="weatherTemp">--°</div>
+            <div style="font-size:10px;color:rgba(255,255,255,0.35);line-height:1.2" id="weatherCity">Loading...</div>
+          </div>
+        </div>
+      </div>
       <select class="lang-selector" id="langSelector" onchange="changeLanguage(this.value)">
         <option value="English">🇺🇸 English</option>
         <option value="Haitian Creole">🇭🇹 Kreyòl</option>
@@ -679,6 +702,63 @@ function closeSidebar() {
   document.getElementById('overlay').classList.remove('active');
 }
 
+// ── CLOCK & WEATHER ──────────────────────────────────────────
+function startClock() {
+  function update() {
+    const now = new Date();
+    let h = now.getHours();
+    const m = now.getMinutes().toString().padStart(2, '0');
+    const s = now.getSeconds().toString().padStart(2, '0');
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const clockEl = document.getElementById('liveClockDisplay');
+    const dateEl = document.getElementById('liveDateDisplay');
+    const yearEl = document.getElementById('liveYearDisplay');
+    const tzEl = document.getElementById('liveTimezone');
+    if (clockEl) clockEl.textContent = `${h}:${m} ${ampm}`;
+    if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+    if (yearEl) yearEl.textContent = now.getFullYear();
+    if (tzEl) {
+      const tz = Intl.DateTimeFormat().resolvedOptions().timeZone.split('/').pop().replace('_', ' ');
+      tzEl.textContent = tz;
+    }
+  }
+  update();
+  setInterval(update, 1000);
+}
+
+async function loadWeather() {
+  try {
+    const geoRes = await fetch('https://ipapi.co/json/');
+    const geo = await geoRes.json();
+    const city = geo.city || 'Your City';
+    const lat = geo.latitude;
+    const lon = geo.longitude;
+    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`);
+    const weather = await weatherRes.json();
+    const temp = Math.round(weather.current_weather?.temperature || 0);
+    const code = weather.current_weather?.weathercode || 0;
+    const icons = {
+      0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
+      45: '🌫️', 48: '🌫️', 51: '🌧️', 53: '🌧️', 55: '🌧️',
+      61: '🌧️', 63: '🌧️', 65: '🌧️', 71: '❄️', 73: '❄️',
+      75: '❄️', 80: '🌦️', 81: '🌦️', 82: '🌦️', 95: '⛈️'
+    };
+    const icon = icons[code] || '🌡️';
+    const tempEl = document.getElementById('weatherTemp');
+    const cityEl = document.getElementById('weatherCity');
+    const iconEl = document.getElementById('weatherIcon');
+    if (tempEl) tempEl.textContent = `${temp}°F`;
+    if (cityEl) cityEl.textContent = city;
+    if (iconEl) iconEl.textContent = icon;
+  } catch (err) {
+    const cityEl = document.getElementById('weatherCity');
+    if (cityEl) cityEl.textContent = 'Unavailable';
+  }
+}
+
 // ── LIBRARY ──────────────────────────────────────────
 let currentFilter = 'haiti';
 let currentBooks = [];
@@ -833,6 +913,8 @@ async function askSajAboutBook(title, author) {
 
 // ── INIT ──────────────────────────────────────────
 window.onload = () => {
+  startClock();
+  loadWeather();
   const saved = localStorage.getItem('sajai_user');
   if (saved) {
     try {
