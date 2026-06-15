@@ -511,11 +511,40 @@ function renderConversations() {
     return;
   }
   list.innerHTML = conversations.map(c => `
-    <div class="conv-item ${c._id === currentConvId ? 'active' : ''}" onclick="loadConversation('${c._id}')">
-      <div class="conv-title">${c.title || 'Conversation'}</div>
-      <div class="conv-time">${timeAgo(c.createdAt)}</div>
+    <div class="conv-item ${c._id === currentConvId ? 'active' : ''}" style="display:flex;align-items:center;gap:6px;justify-content:space-between">
+      <div onclick="loadConversation('${c._id}')" style="flex:1;min-width:0;cursor:pointer">
+        <div class="conv-title">${c.title || 'Conversation'}</div>
+        <div class="conv-time">${timeAgo(c.createdAt)}</div>
+      </div>
+      <button onclick="deleteConversation('${c._id}')" style="background:none;border:none;color:rgba(255,255,255,0.2);cursor:pointer;padding:4px;border-radius:6px;flex-shrink:0;font-size:14px;line-height:1" title="Delete">🗑️</button>
     </div>
-  `).join('');
+  `).join('') + `
+    <div style="padding:8px 12px;margin-top:8px;border-top:0.5px solid rgba(255,255,255,0.06)">
+      <button onclick="deleteAllConversations()" style="width:100%;background:rgba(255,68,68,0.08);border:0.5px solid rgba(255,68,68,0.2);color:#FF4444;border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer">🗑️ Clear All History</button>
+    </div>
+  `;
+}
+
+async function deleteConversation(id) {
+  if (!confirm('Delete this conversation?')) return;
+  try {
+    await fetch(`${BACKEND}/saj/conversations/${currentUser.email}/${id}`, { method: 'DELETE' });
+    conversations = conversations.filter(c => c._id !== id);
+    if (currentConvId === id) { newChat(); }
+    renderConversations();
+  } catch (err) { alert('Could not delete conversation'); }
+}
+
+async function deleteAllConversations() {
+  if (!confirm('Delete ALL conversation history? This cannot be undone.')) return;
+  try {
+    await Promise.all(conversations.map(c => 
+      fetch(`${BACKEND}/saj/conversations/${currentUser.email}/${c._id}`, { method: 'DELETE' })
+    ));
+    conversations = [];
+    newChat();
+    renderConversations();
+  } catch (err) { alert('Could not delete conversations'); }
 }
 
 async function loadConversation(id) {
