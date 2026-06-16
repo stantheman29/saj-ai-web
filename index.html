@@ -243,9 +243,10 @@
     <button class="new-chat-btn" onclick="newChat()">
       <span>✏️</span> New Conversation
     </button>
-    <div style="display:flex;gap:4px;margin:0 16px 8px;background:rgba(255,255,255,0.04);border-radius:10px;padding:4px">
-      <button onclick="switchView('chat')" id="chatViewBtn" style="flex:1;padding:8px;border-radius:8px;border:none;background:#FF6B35;color:#fff;font-size:12px;font-weight:700;cursor:pointer">💬 Chat</button>
-      <button onclick="switchView('library')" id="libraryViewBtn" style="flex:1;padding:8px;border-radius:8px;border:none;background:transparent;color:rgba(255,255,255,0.5);font-size:12px;font-weight:700;cursor:pointer">📚 Library</button>
+    <div style="display:flex;flex-direction:column;gap:4px;margin:0 16px 8px">
+      <button onclick="switchView('chat')" id="chatViewBtn" style="width:100%;padding:10px;border-radius:10px;border:none;background:#FF6B35;color:#fff;font-size:13px;font-weight:700;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px"><span>💬</span> Chat</button>
+      <button onclick="switchView('examples')" id="examplesViewBtn" style="width:100%;padding:10px;border-radius:10px;border:none;background:transparent;color:rgba(255,255,255,0.5);font-size:13px;font-weight:700;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px"><span>✨</span> Examples</button>
+      <button onclick="switchView('library')" id="libraryViewBtn" style="width:100%;padding:10px;border-radius:10px;border:none;background:transparent;color:rgba(255,255,255,0.5);font-size:13px;font-weight:700;cursor:pointer;text-align:left;display:flex;align-items:center;gap:8px"><span>📚</span> Library</button>
     </div>
     <div class="conversations" id="conversationsList">
       <!-- conversations here -->
@@ -259,6 +260,37 @@
         </div>
         <button class="logout-btn" onclick="logout()">Sign out</button>
       </div>
+    </div>
+  </div>
+
+  <!-- EXAMPLES PANEL -->
+  <div class="library-panel" id="examplesPanel">
+    <div class="library-header">
+      <div style="font-size:18px;font-weight:900;color:#fff">✨ What Saj AI Can Do</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Click any example to try it instantly</div>
+    </div>
+    <div style="padding:20px 24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px">
+      ${[
+        { icon:'🏥', title:'Medical Questions', desc:'Get health information in your language', example:'What are the symptoms of diabetes?' },
+        { icon:'🌍', title:'Translation', desc:'Translate between 4 languages instantly', example:'Translate to Haitian Creole: Hello how are you?' },
+        { icon:'⚖️', title:'Legal Help', desc:'Immigration and legal guidance', example:'How do I apply for a green card?' },
+        { icon:'🎨', title:'Image Generation', desc:'Create beautiful AI images', example:'Generate an image of a beautiful Haitian sunset' },
+        { icon:'🇭🇹', title:'Haitian History', desc:'Learn about culture and history', example:'Tell me about Haitian independence' },
+        { icon:'💰', title:'Financial Advice', desc:'Money transfer and financial guidance', example:'How do I send money to Haiti?' },
+        { icon:'📄', title:'Document Scanning', desc:'Upload and understand documents', example:'I want to scan a document' },
+        { icon:'🍽️', title:'Haitian Recipes', desc:'Traditional food and cooking tips', example:'Give me a recipe for Griot' },
+        { icon:'✈️', title:'Travel to Haiti', desc:'Tips for visiting Haiti', example:'What should I know before traveling to Haiti?' },
+        { icon:'📚', title:'Education Help', desc:'Homework and learning assistance', example:'Help me understand photosynthesis' },
+      ].map(e => `
+        <div onclick="tryExample('${e.example}')" style="background:#1A1A2E;border:0.5px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px" onmouseover="this.style.borderColor='#FF6B35'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
+          <div style="font-size:28px;flex-shrink:0">${e.icon}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px">${e.title}</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.4)">${e.desc}</div>
+          </div>
+          <div style="color:rgba(255,255,255,0.2);font-size:18px">→</div>
+        </div>
+      `).join('')}
     </div>
   </div>
 
@@ -341,41 +373,10 @@
       <!-- Welcome screen -->
       <div class="welcome" id="welcomeScreen">
         <div class="welcome-brain">🧠</div>
-        <div class="welcome-title">Bonjou! Mwen se Saj <span>AI</span></div>
-        <div class="welcome-sub">Your personal AI assistant for the Haitian community. Ask me anything in 4 languages!</div>
+        <div class="welcome-title">Hello, <span id="welcomeName">there</span>!</div>
+        <div class="welcome-sub">Welcome to Saj AI — your personal Haitian AI assistant. How can I help you today?</div>
         <div class="welcome-flags">🇭🇹 🇺🇸 🇫🇷 🇪🇸</div>
-        <div class="welcome-grid">
-          <div class="welcome-card" onclick="sendSuggestion('What are the symptoms of diabetes?')">
-            <div class="welcome-card-icon">🏥</div>
-            <div class="welcome-card-title">Medical Questions</div>
-            <div class="welcome-card-desc">Get health information in your language</div>
-          </div>
-          <div class="welcome-card" onclick="sendSuggestion('Translate this to Haitian Creole: Hello how are you?')">
-            <div class="welcome-card-icon">🌍</div>
-            <div class="welcome-card-title">Translation</div>
-            <div class="welcome-card-desc">Translate between 4 languages instantly</div>
-          </div>
-          <div class="welcome-card" onclick="sendSuggestion('How do I apply for a green card?')">
-            <div class="welcome-card-icon">⚖️</div>
-            <div class="welcome-card-title">Legal Help</div>
-            <div class="welcome-card-desc">Immigration and legal guidance</div>
-          </div>
-          <div class="welcome-card" onclick="sendSuggestion('Generate an image of a beautiful Haitian sunset')">
-            <div class="welcome-card-icon">🎨</div>
-            <div class="welcome-card-title">Generate Images</div>
-            <div class="welcome-card-desc">Create beautiful AI images</div>
-          </div>
-          <div class="welcome-card" onclick="sendSuggestion('Tell me about Haitian independence and history')">
-            <div class="welcome-card-icon">🇭🇹</div>
-            <div class="welcome-card-title">Haitian History</div>
-            <div class="welcome-card-desc">Learn about Haitian culture & history</div>
-          </div>
-          <div class="welcome-card" onclick="sendSuggestion('How do I send money to Haiti?')">
-            <div class="welcome-card-icon">💰</div>
-            <div class="welcome-card-title">Financial Advice</div>
-            <div class="welcome-card-desc">Money transfer and financial guidance</div>
-          </div>
-        </div>
+        <div style="margin-top:24px;color:rgba(255,255,255,0.3);font-size:13px">Type a message below to get started ↓</div>
       </div>
     </div>
 
@@ -489,6 +490,8 @@ function showApp() {
   document.getElementById('userAvatar').textContent = (currentUser.name || 'G')[0].toUpperCase();
   document.getElementById('userName').textContent = currentUser.name || 'Guest';
   document.getElementById('userEmail').textContent = isGuest ? 'Guest mode' : currentUser.email;
+  const welcomeName = document.getElementById('welcomeName');
+  if (welcomeName) welcomeName.textContent = currentUser.name?.split(' ')[0] || 'there';
   if (!isGuest) loadConversations();
 }
 
@@ -795,26 +798,39 @@ let currentBooks = [];
 function switchView(view) {
   const chatArea = document.getElementById('chatArea');
   const libraryPanel = document.getElementById('libraryPanel');
+  const examplesPanel = document.getElementById('examplesPanel');
   const chatBtn = document.getElementById('chatViewBtn');
   const libBtn = document.getElementById('libraryViewBtn');
-  
+  const exBtn = document.getElementById('examplesViewBtn');
+
+  chatArea.style.display = 'none';
+  libraryPanel.style.display = 'none';
+  examplesPanel.style.display = 'none';
+
+  [chatBtn, libBtn, exBtn].forEach(b => { b.style.background = 'transparent'; b.style.color = 'rgba(255,255,255,0.5)'; });
+
   if (view === 'chat') {
     chatArea.style.display = 'flex';
-    libraryPanel.style.display = 'none';
     chatBtn.style.background = '#FF6B35';
     chatBtn.style.color = '#fff';
-    libBtn.style.background = 'transparent';
-    libBtn.style.color = 'rgba(255,255,255,0.5)';
-  } else {
-    chatArea.style.display = 'none';
+  } else if (view === 'library') {
     libraryPanel.style.display = 'flex';
     libraryPanel.style.flexDirection = 'column';
-    chatBtn.style.background = 'transparent';
-    chatBtn.style.color = 'rgba(255,255,255,0.5)';
     libBtn.style.background = '#FF6B35';
     libBtn.style.color = '#fff';
     if (currentBooks.length === 0) filterBooks('haiti');
+  } else if (view === 'examples') {
+    examplesPanel.style.display = 'flex';
+    examplesPanel.style.flexDirection = 'column';
+    exBtn.style.background = '#FF6B35';
+    exBtn.style.color = '#fff';
   }
+}
+
+function tryExample(text) {
+  switchView('chat');
+  document.getElementById('chatInput').value = text;
+  sendMessage();
 }
 
 async function searchBooks() {
