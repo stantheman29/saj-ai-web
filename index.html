@@ -269,29 +269,7 @@
       <div style="font-size:18px;font-weight:900;color:#fff">✨ What Saj AI Can Do</div>
       <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Click any example to try it instantly</div>
     </div>
-    <div style="padding:20px 24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px">
-      ${[
-        { icon:'🏥', title:'Medical Questions', desc:'Get health information in your language', example:'What are the symptoms of diabetes?' },
-        { icon:'🌍', title:'Translation', desc:'Translate between 4 languages instantly', example:'Translate to Haitian Creole: Hello how are you?' },
-        { icon:'⚖️', title:'Legal Help', desc:'Immigration and legal guidance', example:'How do I apply for a green card?' },
-        { icon:'🎨', title:'Image Generation', desc:'Create beautiful AI images', example:'Generate an image of a beautiful Haitian sunset' },
-        { icon:'🇭🇹', title:'Haitian History', desc:'Learn about culture and history', example:'Tell me about Haitian independence' },
-        { icon:'💰', title:'Financial Advice', desc:'Money transfer and financial guidance', example:'How do I send money to Haiti?' },
-        { icon:'📄', title:'Document Scanning', desc:'Upload and understand documents', example:'I want to scan a document' },
-        { icon:'🍽️', title:'Haitian Recipes', desc:'Traditional food and cooking tips', example:'Give me a recipe for Griot' },
-        { icon:'✈️', title:'Travel to Haiti', desc:'Tips for visiting Haiti', example:'What should I know before traveling to Haiti?' },
-        { icon:'📚', title:'Education Help', desc:'Homework and learning assistance', example:'Help me understand photosynthesis' },
-      ].map(e => `
-        <div onclick="tryExample('${e.example}')" style="background:#1A1A2E;border:0.5px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:14px" onmouseover="this.style.borderColor='#FF6B35'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
-          <div style="font-size:28px;flex-shrink:0">${e.icon}</div>
-          <div style="flex:1">
-            <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px">${e.title}</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.4)">${e.desc}</div>
-          </div>
-          <div style="color:rgba(255,255,255,0.2);font-size:18px">→</div>
-        </div>
-      `).join('')}
-    </div>
+    <div style="padding:20px 24px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:12px" id="examplesList"></div>
   </div>
 
   <!-- LIBRARY PANEL -->
@@ -824,7 +802,35 @@ function switchView(view) {
     examplesPanel.style.flexDirection = 'column';
     exBtn.style.background = '#FF6B35';
     exBtn.style.color = '#fff';
+    renderExamples();
   }
+}
+
+function renderExamples() {
+  const examples = [
+    { icon:'🏥', title:'Medical Questions', desc:'Get health information in your language', example:'What are the symptoms of diabetes?' },
+    { icon:'🌍', title:'Translation', desc:'Translate between 4 languages instantly', example:'Translate to Haitian Creole: Hello how are you?' },
+    { icon:'⚖️', title:'Legal Help', desc:'Immigration and legal guidance', example:'How do I apply for a green card?' },
+    { icon:'🎨', title:'Image Generation', desc:'Create beautiful AI images', example:'Generate an image of a beautiful Haitian sunset' },
+    { icon:'🇭🇹', title:'Haitian History', desc:'Learn about Haitian culture and history', example:'Tell me about Haitian independence' },
+    { icon:'💰', title:'Financial Advice', desc:'Money transfer and financial guidance', example:'How do I send money to Haiti?' },
+    { icon:'📄', title:'Document Scanning', desc:'Upload and understand documents', example:'I want to scan a document' },
+    { icon:'🍽️', title:'Haitian Recipes', desc:'Traditional food and cooking tips', example:'Give me a recipe for Griot' },
+    { icon:'✈️', title:'Travel to Haiti', desc:'Tips for visiting Haiti', example:'What should I know before traveling to Haiti?' },
+    { icon:'📚', title:'Education Help', desc:'Homework and learning assistance', example:'Help me understand photosynthesis' },
+  ];
+  const list = document.getElementById('examplesList');
+  if (!list) return;
+  list.innerHTML = examples.map(e => `
+    <div onclick="tryExample('${e.example.replace(/'/g, "\'")}')" style="background:#1A1A2E;border:0.5px solid rgba(255,255,255,0.06);border-radius:14px;padding:16px;cursor:pointer;display:flex;align-items:center;gap:14px" onmouseover="this.style.borderColor='#FF6B35'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
+      <div style="font-size:28px;flex-shrink:0">${e.icon}</div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:700;color:#fff;margin-bottom:3px">${e.title}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.4)">${e.desc}</div>
+      </div>
+      <div style="color:rgba(255,255,255,0.2);font-size:18px">→</div>
+    </div>
+  `).join('');
 }
 
 function tryExample(text) {
