@@ -937,8 +937,8 @@ function openBook(index) {
           ${info.language ? `<span style="font-size:11px;color:#FF6B35;background:rgba(255,107,53,0.1);padding:3px 10px;border-radius:10px">${info.language.toUpperCase()}</span>` : ''}
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${previewLink ? `<button class="book-btn book-btn-primary" onclick="window.open('${previewLink}','_blank')">📖 Preview Book</button>` : ''}
-          ${buyLink ? `<button class="book-btn book-btn-secondary" onclick="window.open('${buyLink}','_blank')">🔗 More Info</button>` : ''}
+          <button class="book-btn book-btn-primary" onclick="window.open('https://www.amazon.com/s?k=${encodeURIComponent(title + ' ' + author)}&tag=sajaiapp20-20','_blank')">🛒 Buy on Amazon</button>
+          ${previewLink ? `<button class="book-btn book-btn-secondary" onclick="window.open('${previewLink}','_blank')">📖 Preview</button>` : ''}
           <button class="book-btn book-btn-secondary" onclick="askSajAboutBook('${title.replace(/'/g, "\'")}', '${author.replace(/'/g, "\'")}')">🧠 Ask Saj AI</button>
         </div>
       </div>
